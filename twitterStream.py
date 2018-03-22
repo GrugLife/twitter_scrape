@@ -10,6 +10,8 @@ import operator, argparse
 
 
 def twitter_cred():
+    """loads in keys and tokens"""
+
     # Variables that contains the user credentials to access Twitter API
     CONSUMER_KEY = 'BCvCGMyuiWR2fTOCrwNvbEDhC'
     CONSUMER_SECRET = 'Qpd3nG62cQkVvugcUsHA5Ft2nJli7b8vIWv6HMOlVhrCQQofAf'
@@ -17,10 +19,12 @@ def twitter_cred():
     ACCESS_TOKEN_SECRET = 'RcaJ7j4g5ZrhpBcxPX0osOIXDBLrMAYiAwMKi1DoXNjTE'
 
     oauth = OAuth(ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+
     return oauth
 
 
 def twitter_scrape(search):
+
     # Initiate the connection to Twitter Streaming API
     twitter = Twitter(auth=twitter_cred())
 
@@ -76,11 +80,16 @@ def parse_tweet(hashtags):
         print(key, value)
     print(topHashtag)
 
+
 def main():
     parser = argparse.ArgumentParser(description = "Twitter Tweet Scraper based on search terms")
-    parser.add_argument('search', type=str, nargs='+', help='enter terms to be search on twitter')
+    parser.add_argument('-s', '--search', type=str, nargs='+', help='enter terms to be search on twitter')
+    parser.add_argument('-t', '--trend', action='store_true', help='will display the trending tweets')
     args = parser.parse_args()
-    twitter_scrape(args.search)
+    if args.search:
+        twitter_scrape(args.search)
+    else:
+        print(args.trend)
 
 
 if __name__ == '__main__':
