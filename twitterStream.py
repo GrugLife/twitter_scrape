@@ -22,47 +22,44 @@ def twitter_cred():
 
 def twitter_scrape(search):
     # Initiate the connection to Twitter Streaming API
-    twitter_stream = TwitterStream(auth=twitter_cred())
+    twitter = Twitter(auth=twitter_cred())
 
     # Get a sample of the public data following through Twitter
-    iterator = twitter_stream.statuses.filter(track = search[0], language = 'en')
+    # iterator = twitter_stream.statuses.filter(track = '$' + search[0], language = 'en')
     # iterator = twitter_stream.statuses.sample(language = 'en')
 
+    # Twitter Search API
+    iterator = twitter.search.tweets(q=search, result_type='recent', lang='en', count=10)
 
     # Print each tweet in the stream to the screen
     # Here we set it to stop after getting n tweets.
     # You don't have to set it to stop, but can continue running
     # the Twitter API to collect data for days or even longer.
-    tweet_count = 10
-    response = []
-    state = []
-    lst = []
     hashtags = []
-    for tweet in iterator:
+    for tweet in iterator['statuses']:
 
         try:
             # Read in one line of the file, convert it into a json object
             if 'text' in tweet:  # only messages contains 'text' field is a tweet
-                #print(tweet['id'])  # This is the tweet's id
-                #print(tweet['created_at'])  # when the tweet posted
+                print('ID:\t\t', tweet['id'])  # This is the tweet's id
+                print('Created at:\t',tweet['created_at'])  # when the tweet posted
                 response = tweet['text'] + ' ' + tweet['user']['location'] + '\n' # content of the tweet
                 obj.write(response)
-                print(response)
-                #print(tweet['user']['id'])  # id of the user who posted the tweet
-                #print(tweet['user']['name'])  # name of the user, e.g. "Wei Xu"
-                #print(tweet['user']['screen_name'])  # name of the user account, e.g. "cocoweixu"
+                print('User ID:\t',tweet['user']['id'])  # id of the user who posted the tweet
+                print('User Name:\t',tweet['user']['name'])  # name of the user, e.g. "Wei Xu"
+                print('Screen Name:\t',tweet['user']['screen_name'])  # name of the user account, e.g. "cocoweixu"
+                print('Tweet:\t\t', tweet['text'])
+                print('Location:\t',tweet['user']['location'])
                 for hashtag in tweet['entities']['hashtags']:
                     hashtags.append(hashtag['text'])
-                tweet_count -= 1
-        except:
+                print("**********************************************")
+        except Exception as e:
             # read in a line is not in JSON format (sometimes error occured)
+            print(e)
             continue
 
         # The command below will do pretty printing for JSON data, try it out
         # print json.dumps(tweet, indent=4)
-
-        if tweet_count <= 0:
-            break
 
     parse_tweet(hashtags)
 
@@ -83,7 +80,6 @@ def main():
     parser = argparse.ArgumentParser(description = "Twitter Tweet Scraper based on search terms")
     parser.add_argument('search', type=str, nargs='+', help='enter terms to be search on twitter')
     args = parser.parse_args()
-    print(args.search[0])
     twitter_scrape(args.search)
 
 
