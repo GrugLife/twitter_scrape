@@ -96,11 +96,9 @@ def parse_tweet(hashtags):
 
 
 def location_lookup(location):
-    with open('woeid.json', 'r') as file:
-        woeid = json.dumps(file.read())
-        locations = json.loads(woeid)
-        print(type(locations))
-
+    woeid = json.load(open('woeid.json'))
+    woeid['locations'][0]['name']
+	
 def main():
     parser = argparse.ArgumentParser(description = "Twitter Tweet Scraper based on search terms")
     parser.add_argument('-s', '--search', type=str, nargs='+', help='enter terms to be search on twitter')
