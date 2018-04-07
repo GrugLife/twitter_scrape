@@ -37,13 +37,13 @@ def twitter_scrape(search):
     package_tweets(iterator)
 
 
-def twitter_trend():
+def twitter_trend(woeid):
 
     ## Initiate the connection to Twitter API
     twitter = Twitter(auth=twitter_cred())
 
     # Get all the locations where Twitter provides trends service
-    sfo_trends = twitter.trends.place(_id=1)  # 2487956)
+    sfo_trends = twitter.trends.place(_id=woeid)  # 2487956)
     print(json.dumps(sfo_trends, indent=4))
 
 
@@ -95,10 +95,14 @@ def parse_tweet(hashtags):
     print(topHashtag)
 
 
-def location_lookup(location):
+def location_lookup(trend):
     woeid = json.load(open('woeid.json'))
-    woeid['locations'][0]['name']
-	
+    for location in woeid['locations']:
+        if location['name'] == trend[0].title():
+            print(location['woeid'])
+            twitter_trend(location['woeid'])
+    
+
 def main():
     parser = argparse.ArgumentParser(description = "Twitter Tweet Scraper based on search terms")
     parser.add_argument('-s', '--search', type=str, nargs='+', help='enter terms to be search on twitter')
@@ -107,8 +111,7 @@ def main():
     if args.search:
         twitter_scrape(args.search)
     else:
-        location_lookup(args.search)
-        #twitter_trend()
+        location_lookup(args.trend)
 
 
 if __name__ == '__main__':
